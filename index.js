@@ -12,9 +12,9 @@ const PORT = process.env.PORT || 4000;
 
 //database connection
 dbConnect();
-app.get('/', (req, res) => {
-  res.status(200).send('home page');
-})
+// app.get('/', (req, res) => {
+//   res.status(200).send('home page');
+// })
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended:false}));

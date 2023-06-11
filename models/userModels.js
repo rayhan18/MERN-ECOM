@@ -30,15 +30,24 @@ var userSchema = new mongoose.Schema({
         type:String,
         default:"user", 
 
-    }
+    },
+    cart:{ type:Array, default:[] },
+    address:[{ type:mongoose.Schema.Types.ObjectId, ref:"Address", }],
+    wishlist:[{type:mongoose.Schema.Types.ObjectId,ref:"product"}],
+   
+},
+{
+    timestamps: false,
 });
 
 userSchema.pre('save', async function(req, res, next) {
     const salt = await bcrypt.genSaltSync(10);
     this.password = await bcrypt.hashSync(this.password, salt);
 })
-userSchema.method.isPasswordMatched = async function(enterPassword){
-    return bcrypt.compare(this.password === enterPassword)
-}
+userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+  };
 //Export the model
 module.exports = mongoose.model('User', userSchema);
+
+

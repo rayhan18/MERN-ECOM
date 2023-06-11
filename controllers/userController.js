@@ -21,7 +21,7 @@ const loginUserCrt = asyncHandler(async (req,res) =>{
     const {email, password} = req.body;
     //console.log(email,password)
     const findUser = await User.findOne({ email: email})
-    if(findUser && findUser.password === password){
+    if(findUser && (await findUser.isPasswordMatched(password))){
         res.json({
             _id: findUser?._id,
             firstName: findUser?.firstName,
@@ -35,7 +35,60 @@ const loginUserCrt = asyncHandler(async (req,res) =>{
     }
     
 })
+//get all users
+const getAllUsers = asyncHandler(async (req,res) =>{
+    try {
+        const getUsers = await User.find()
+        res.json(getUsers)
+    } catch (error) {
+        throw new Error(error )
+    }
+})
+//get single user
+const getUser = asyncHandler(async (req,res) =>{
+    const {id} = req.params
+    try {
+        const getSingleUser = await User.findById(id)
+        res.json({getSingleUser})
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+//update user
+const updateUser = asyncHandler(async (req,res) =>{
+    const {id} = req.params
+    try {
+        const updateUserData = await User.findByIdAndUpdate(
+            id,{
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            mobile: req.body.mobile,
+        },
+          {
+            new:true
+        } 
+        )
+     res.json(updateUserData)
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+//delete single user
+const deleteUser = asyncHandler(async (req,res) =>{
+    const {id} = req.params
+    try {
+        const delSingleUser = await User.findByIdAndDelete(id)
+        res.json({delSingleUser})
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 module.exports = {
     createUser,
-    loginUserCrt
+    loginUserCrt,
+    getAllUsers,
+    getUser,
+    deleteUser,
+    updateUser
 };
