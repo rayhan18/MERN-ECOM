@@ -31,13 +31,18 @@ var userSchema = new mongoose.Schema({
         default:"user", 
 
     },
+
+    isBlocked:{
+        type:Boolean,
+        default:false,
+    },
     cart:{ type:Array, default:[] },
     address:[{ type:mongoose.Schema.Types.ObjectId, ref:"Address", }],
     wishlist:[{type:mongoose.Schema.Types.ObjectId,ref:"product"}],
    
 },
 {
-    timestamps: false,
+    timestamps: true,
 });
 
 userSchema.pre('save', async function(req, res, next) {
