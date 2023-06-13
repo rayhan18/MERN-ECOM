@@ -10,7 +10,7 @@ const authMiddleware = asyncHandler(async (req,res,next)=>{
       try {
         if(token){
             const decoded = jwt.verify(token, process.env.jwt_SECRET_KEY)
-            console.log(decoded)
+            //console.log(decoded)
             const user = await User.findById(decoded?.id)
             req.user = user
             next()
@@ -27,7 +27,7 @@ const isAdmin = asyncHandler(async (req,res,next)=>{
  // console.log(req.user)
  const {email} = req.user
  const adminUser = await User.findOne({email: email})
- if(adminUser.role !=="admin" ){
+ if(adminUser.role !== "admin" ){
    throw new Error("You are not an administrator")
  }else{
   next()
