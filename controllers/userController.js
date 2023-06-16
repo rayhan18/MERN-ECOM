@@ -5,6 +5,7 @@ const generateToken = require('../config/jwtToken');
 const validateMongodbId = require('../utils/validateMongodbId');
 const { generateRefreshToken } = require('../config/refreshtoken');
 const jwt = require('jsonwebtoken');
+
 //create user model
 const createUser = asyncHandler(
     async (req,res) =>{
@@ -175,6 +176,44 @@ const unblockUser = asyncHandler(async (req,res) =>{
       throw new Error(error)
     }
 })
+
+//update password
+const updateUserPassword = asyncHandler(async (req,res) => {
+   // console.log(req.body)
+ const {_id} = req.user
+ const {password} = req.body
+ validateMongodbId(_id)
+ const user = await User.findById(_id)
+ if(password){
+    user.password = password
+    const updatePassword = await user.save()
+    res.send(updatePassword)
+ }else{
+    res.json(user)
+ }
+})
+
+//forget password toket generator
+const forgotPasswordToken = asyncHandler(async (req,res) => {
+    const {email} = req.body
+    const user = await User.findOne({email})
+    if(!user) throw new Error("User not found in this email")
+    try {
+        const token = await user.createPasswordResetToken();
+        await user.save();
+        const resetURL = ` Hi Please following this link to reset your password.this link is valid 10mints from now <a href="https://127.0.0.1:5000/api/user/reset-password/${token}>Click here</a>`
+        const data = {
+            to: email,
+            text:"hey user",
+            subject: "Forget password link",
+            htm: resetURL
+        }
+        sendEmail(data)
+        res.json(token)
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 module.exports = {
     createUser,
     loginUserCrt,
@@ -185,5 +224,7 @@ module.exports = {
     blockUser,
     unblockUser,
     handleRefreshToken,
-    logout
+    logout,
+    updateUserPassword,
+    forgotPasswordToken
 };
