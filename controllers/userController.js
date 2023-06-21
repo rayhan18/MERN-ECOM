@@ -5,6 +5,9 @@ const generateToken = require('../config/jwtToken');
 const validateMongodbId = require('../utils/validateMongodbId');
 const { generateRefreshToken } = require('../config/refreshtoken');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('./emailController');
+ const crypto = require('crypto');
+
 
 //create user model
 const createUser = asyncHandler(
@@ -34,7 +37,7 @@ const loginUserCrt = asyncHandler(async (req,res) =>{
         //set cookie
         res.cookie('refreshToken', refreshToken ,{
             httpOnly: true,
-            maxAge: 72 * 60 * 60 * 1000,
+            maxAge: 72 * 60 * 60 * 1000, //3days
         })
         res.json({
             _id: findUser?._id,
@@ -193,27 +196,47 @@ const updateUserPassword = asyncHandler(async (req,res) => {
  }
 })
 
-//forget password toket generator
-const forgotPasswordToken = asyncHandler(async (req,res) => {
-    const {email} = req.body
-    const user = await User.findOne({email})
-    if(!user) throw new Error("User not found in this email")
+//forget password token generator+
+const forgotPasswordToken = asyncHandler(async (req, res ,next) => {
+    const { email } = req.body;
+    const user = await User.findOne({email});
+    if (!user) throw new Error("User not found with this email");
     try {
-        const token = await user.createPasswordResetToken();
-        await user.save();
-        const resetURL = ` Hi Please following this link to reset your password.this link is valid 10mints from now <a href="https://127.0.0.1:5000/api/user/reset-password/${token}>Click here</a>`
-        const data = {
-            to: email,
-            text:"hey user",
-            subject: "Forget password link",
-            htm: resetURL
-        }
-        sendEmail(data)
-        res.json(token)
+      let token = await user.createPasswordResetToken();
+    
+      await user.save();
+      const resetURL = `Hi, Please follow this link to reset Your Password. This link is valid till 10 minutes from now. <a href='http://127.0.0.1:5000/api/user/reset-password/${token}'>Click Here</>`;
+      const data = {
+        to: email,
+        text: "Hey User",
+        subject: "Forgot Password Link",
+        htm: resetURL,
+      };
+    
+     await sendEmail(data);
+      res.json(token);
     } catch (error) {
-        throw new Error(error)
+      throw new Error(error);
     }
-})
+    
+  });
+
+  //reset password
+  const resetPassword =asyncHandler(async (req, res) => {
+    const {password} = req.body
+    const {token} = req.params
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires:{$gt:Date.now()},
+    })
+    if(!user) throw new Error("Token expired trying to reset your password");
+     user.password = password;
+     user.passwordResetToken = undefined;
+     user.passwordResetExpires = undefined;
+     await user.save();
+     res.json(user);
+  })
 module.exports = {
     createUser,
     loginUserCrt,
@@ -226,5 +249,6 @@ module.exports = {
     handleRefreshToken,
     logout,
     updateUserPassword,
-    forgotPasswordToken
+    forgotPasswordToken,
+    resetPassword
 };

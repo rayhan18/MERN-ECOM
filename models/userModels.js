@@ -56,7 +56,7 @@ var userSchema = new mongoose.Schema({
 //hashing password
 userSchema.pre('save', async function(req, res, next) {
     if(!this.isModified('password')){
-        next()
+       // next()
     }
     const salt = await bcrypt.genSaltSync(10);
     this.password = await bcrypt.hashSync(this.password, salt);
@@ -72,7 +72,7 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
     .createHash('sha256')
     .update(resettoken)
     .digest('hex') 
-    this.passwordResetExpires = Date.now() + 30 * 60 * 1000;  
+    this.passwordResetExpires = Date.now() + 30 * 60 * 1000;  //10minits 
     return resettoken;
   }
 

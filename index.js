@@ -4,6 +4,7 @@ const dbConnect = require('./config/dbConection');
 const app = express();
 //const dotenv =require('dotenv').config();
 const authRoute = require('./routers/authRoute') 
+const blogRouter = require('./routers/blogRoute') 
 const bodyParser = require('body-parser');   
 const { notFound, errorHandler } = require('./midelwares/errorHandler');
 const cookieParser = require('cookie-parser');
@@ -12,7 +13,7 @@ const morgan = require('morgan');
 
 const PORT = process.env.PORT || 4000;
 //https://www.youtube.com/watch?v=S6Yd5cPtXr4&t=252s
-
+//https://www.youtube.com/watch?v=dTFXufTgfOE
 
 //database connection
 dbConnect();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 app.use('/api/user' ,authRoute)
 app.use('/api/product' , productRouter);
+app.use('/api/blog' , blogRouter);
 
 
 app.use(notFound)
