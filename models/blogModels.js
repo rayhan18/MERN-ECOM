@@ -39,7 +39,7 @@ var blogSchema = new mongoose.Schema({
     dislikes:[
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Comment",
+            ref: "User",
         }
     ],
     image:{
