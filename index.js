@@ -12,7 +12,8 @@ const cookieParser = require('cookie-parser');
 const productRouter = require('./routers/productRoutes');
 const morgan = require('morgan');
 const productCategoryRouter = require('./routers/productCategoryRoute')    
-const blogCategoryRouter = require('./routers/blogCategoryRoute')    
+const blogCategoryRouter = require('./routers/blogCategoryRoute') 
+const couponRouter = require('./routers/couponRoute')   
 const PORT = process.env.PORT || 4000;
 
 
@@ -31,6 +32,7 @@ app.use('/api/blog' , blogRouter);
 app.use('/api/category' , productCategoryRouter);
 app.use('/api/blogcategory' , blogCategoryRouter);
 app.use('/api/brand' , brandRouter);
+app.use('/api/coupon' , couponRouter);
 
 
 app.use(notFound)
