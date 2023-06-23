@@ -14,8 +14,8 @@ const morgan = require('morgan');
 const productCategoryRouter = require('./routers/productCategoryRoute')    
 const blogCategoryRouter = require('./routers/blogCategoryRoute')    
 const PORT = process.env.PORT || 4000;
-//https://www.youtube.com/watch?v=S6Yd5cPtXr4&t=252s
-//https://www.youtube.com/watch?v=dTFXufTgfOE
+
+
 
 //database connection
 dbConnect();

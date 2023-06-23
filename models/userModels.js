@@ -39,7 +39,7 @@ var userSchema = new mongoose.Schema({
     },
     cart:{ type:Array, default:[] },
     address:[{ type:mongoose.Schema.Types.ObjectId, ref:"Address", }],
-    wishlist:[{type:mongoose.Schema.Types.ObjectId,ref:"product"}],
+    wishlist:[{type:mongoose.Schema.Types.ObjectId, ref:"Product"}],
      refreshToken:{
          type:String
         },
@@ -47,8 +47,6 @@ var userSchema = new mongoose.Schema({
         passwordResetToken:String,
         passwordResetExpires:Date,
 },
-
-
 {
     timestamps: true,
 });
