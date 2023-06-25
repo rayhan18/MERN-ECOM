@@ -42,14 +42,12 @@ var blogSchema = new mongoose.Schema({
             ref: "User",
         }
     ],
-    image:{
-        type:String,
-        default:"https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg"
-    },
+    
     author:{
         type:String,
         default:"Admin"
     },
+    images:[],
 
 },{
     toJSON:{
