@@ -4,6 +4,7 @@
 const notFound = (req,res,next)=>{
  const error = new Error(`not found request :${req.originalUrl}`)
  res.status(404);
+ console.log(error ,'error message')
  next(error)
 };
 

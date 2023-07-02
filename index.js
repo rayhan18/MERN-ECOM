@@ -6,6 +6,8 @@ const app = express();
 const authRoute = require('./routers/authRoute') 
 const blogRouter = require('./routers/blogRoute') 
 const brandRouter = require('./routers/brandRoute')
+const colorRouter = require('./routers/colorRoute')
+const enqRouter = require('./routers/enqRoute')
 const bodyParser = require('body-parser');   
 const { notFound, errorHandler } = require('./midelwares/errorHandler');
 const cookieParser = require('cookie-parser');
@@ -33,6 +35,8 @@ app.use('/api/category' , productCategoryRouter);
 app.use('/api/blogcategory' , blogCategoryRouter);
 app.use('/api/brand' , brandRouter);
 app.use('/api/coupon' , couponRouter);
+app.use('/api/color' , colorRouter);
+app.use('/api/enquiry' , enqRouter);
 
 
 app.use(notFound)

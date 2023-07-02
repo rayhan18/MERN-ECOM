@@ -3,7 +3,7 @@ const asyncHandler = require('express-async-handler')
 const slugify = require('slugify')
 const User = require('../models/userModels')
 const validateMongoDbId = require('../utils/validateMongodbId')
-const cloudinaryUploadImg = require('../utils/cloudinary')
+const {cloudinaryUploadImg, cloudinaryDeleteImg} = require('../utils/cloudinary')
 const fs = require('fs')
 //create product
 const createProduct = asyncHandler(async (req, res ) => {
@@ -111,53 +111,23 @@ let queryStr = JSON.stringify(queryObj)
 });
 
 //wishlist add
-// const addToWishlist = asyncHandler(async(req, res) => {
-//   const {_id} = req.user
-//   console.log(_id)
-//   const {productId} = req.body
-//     console.log(productId)
-//   try {
-//     const user = await User.findById(_id)
-//     const alreadyadded =await  user.wishlist.find((id) => id.toString() === productId)
-//     if(alreadyadded){
-//       let user = await User.findByIdAndUpdate(_id,{
-//         $pull: {wishlist:productId}
-//       },
-//         {new:true}
-//       )
-//       res.json(user)
-//     }else{
-//       let user = await User.findByIdAndUpdate(_id,
-//         {$push: {wishlist:productId}},
-//         {new:true}
-//         );
-//         res.json(user)
-//     }
-//   } catch (error) {
-//     throw new Error(error)
-//   }
-// })
-
 const addToWishlist = asyncHandler(async(req, res) => {
-  const { _id } = req.user;
-  console.log(_id)
+  const  {_id}  = req.User;
   const {productId} = req.body
-   const productIdString = productId.toString();
- 
-  
-
+  //const productIdString = productId.toString();
+  console.log(_id)
   try {
     const user = await User.findById(_id);
-    const alreadyAdded = user.wishlist.find((id) => id.toString() === productIdString);
+    const alreadyAdded = user.wishlist.find((id) => id.toString() === productId);
 
     if (alreadyAdded) {
-      await User.findByIdAndUpdate(_id, {
-        $pull: { wishlist: productIdString },
+    let user =  await User.findByIdAndUpdate(_id, {
+        $pull: { wishlist: productId },
       }, { new: true });
       res.json(user);
     } else {
-      await User.findByIdAndUpdate(_id, {
-        $push: { wishlist: productIdString },
+     let user = await User.findByIdAndUpdate(_id, {
+        $push: { wishlist: productId },
       }, { new: true });
       res.json(user);
     }
@@ -224,9 +194,9 @@ const ratings = asyncHandler(async(req, res) =>{
 //upload images
 const uploadImages = asyncHandler(async(req, res) => {
   
-  const {id}=req.params
-  validateMongoDbId(id)
-  console.log(req.files,'upload')
+  // const {id}=req.params
+  // validateMongoDbId(id)
+  // console.log(req.files,'upload')
   try{
     const uploader =(path)=>cloudinaryUploadImg(path, "images")
     const urls = []
@@ -235,22 +205,38 @@ const uploadImages = asyncHandler(async(req, res) => {
     for (let file of files){
       const{path} = file
       let newpath = await uploader(path)
-      console.log(newpath)
+     // console.log(newpath)
       urls.push(newpath)
       fs.unlinkSync(path)
     }
-    console.log(files ,'files')
-    let findProduct =await Product.findByIdAndUpdate(
-      id,
-      {
-        images:urls.map((file)=>{
-          return file
-        })
-      },
-      {new:true,}
-    )
-    res.json(findProduct)
+   const images = urls.map((file)=>{
+    return file
+  })
+  res.json(images);
+    // let findProduct =await Product.findByIdAndUpdate(
+    //   id,
+    //   {
+    //     images:urls.map((file)=>{
+    //       return file
+    //     })
+    //   },
+    //   {new:true,}
+    // )
+    // res.json(findProduct)
    // console.log(findProduct)
+  }catch(error){
+    throw new Error(error)
+  }
+
+})
+
+const deleteImages = asyncHandler(async(req, res) => {
+  const {id} =req.params
+  try{
+    const deleteImg =(path)=>cloudinaryDeleteImg(id, "images")
+    res.json({messsage: "Images deleted"})
+    
+
   }catch(error){
     throw new Error(error)
   }
@@ -264,5 +250,7 @@ module.exports ={
     deleteProduct,
     addToWishlist,
     ratings,
-    uploadImages
+    uploadImages,
+    deleteImages 
+
 };
