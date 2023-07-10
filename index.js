@@ -17,7 +17,7 @@ const productCategoryRouter = require('./routers/productCategoryRoute')
 const blogCategoryRouter = require('./routers/blogCategoryRoute') 
 const couponRouter = require('./routers/couponRoute')   
 const PORT = process.env.PORT || 4000;
-
+const cors = require ('cors');
 
 
 //database connection
@@ -27,7 +27,7 @@ app.use(morgan('dev'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended:false}));
 app.use(cookieParser());
-
+app.use(cors());
 app.use('/api/user' ,authRoute)
 app.use('/api/product' , productRouter);
 app.use('/api/blog' , blogRouter);
