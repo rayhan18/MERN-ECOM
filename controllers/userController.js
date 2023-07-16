@@ -353,7 +353,7 @@ const userCart = asyncHandler(async (req, res) => {
         object.product = cart[i]._id;
         object.count = cart[i].count;
         object.color = cart[i].color;
-        let getPrice = await Product.findById(cart[i]._id).select("price").exec();
+        let getPrice = await Products.findById(cart[i]._id).select("price").exec();
         object.price = getPrice.price;
         products.push(object);
       }
@@ -420,6 +420,7 @@ const userCart = asyncHandler(async (req, res) => {
     const {COD ,couponApplied} = req.body
     const {_id} = req.user
     validateMongodbId(_id)
+    console.log(req.body ,'body')
     try {
         if(!COD) throw new Error("Create cash order failed");
         const user = await User.findById(_id);
@@ -452,7 +453,7 @@ const userCart = asyncHandler(async (req, res) => {
                 }
             }
         })
-        const updated =await Product.bulkWrite(update,{})
+        const updated =await Products.bulkWrite(update,{})
         res.json({message:"Success"})
     } catch (error) {
         throw new Error(error)
@@ -463,13 +464,25 @@ const userCart = asyncHandler(async (req, res) => {
     const {_id} = req.user
     validateMongodbId(_id)
     try {
-        const userOrders = await Order.findOne({orderby:_id }).populate(Products.product).exec()
+        const userOrders = await Order.findOne({orderby:_id })
+        .populate(Products.product)
+        .populate("orderby").exec()
         res.json(userOrders)
     } catch (error) {
         throw new Error(error)
     }
   })
 
+  const getAllOrders = asyncHandler(async(req,res) => {
+    try {
+        const allUserOrders = await Order.find()
+        .populate(Products.product)
+        .populate("orderby").exec()
+        res.json(allUserOrders)
+    } catch (error) {
+        throw new Error(error)
+    }
+  })
   const updatedOrderStatus = asyncHandler(async(req,res) => {
      const {status} = req.body
      const {id} = req.params
@@ -507,5 +520,6 @@ module.exports = {
     applyCoupon,
     createOrder,
     getOrders,
-    updatedOrderStatus
+    updatedOrderStatus,
+    getAllOrders
 };

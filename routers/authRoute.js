@@ -4,7 +4,7 @@ const {createUser, loginUserCrt, getAllUsers, getUser, deleteUser,
     updateUser, blockUser, unblockUser, handleRefreshToken, logout,
      updateUserPassword, forgotPasswordToken, resetPassword, loginAdminCrt, 
      getWishlist, saveAddress, userCart, getUserCart,
-      emptyCart, applyCoupon, createOrder, getOrder, getOrders, updatedOrderStatus, } = require('../controllers/userController');
+      emptyCart, applyCoupon, createOrder, getOrder, getOrders, updatedOrderStatus, getAllOrders, } = require('../controllers/userController');
 const {authMiddleware, isAdmin} = require('../midelwares/authMidelware');
 
 
@@ -22,6 +22,7 @@ router.post('/cart/cash-order',authMiddleware, createOrder )
 
 router.get('/all-users', getAllUsers )
 router.get('/get-orders', authMiddleware, getOrders )
+router.get('/getallorders', authMiddleware,isAdmin, getAllOrders )
 
 router.get('/refresh',handleRefreshToken )
 router.get('/logout',logout )
